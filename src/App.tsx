@@ -1,230 +1,277 @@
-import React, { useState, useEffect } from 'react';
-import { Star, Check, Timer, ShieldCheck, Truck, Package, ArrowRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Globe2, Truck, Shield, Headphones, Star, ChevronRight } from 'lucide-react';
+import ProductCard from './components/ProductCard';
+import Testimonial from './components/Testimonial';
+import LanguageSelector from './components/LanguageSelector';
+import BenefitCard from './components/BenefitCard';
+import ProductTabs from './components/ProductTabs';
+import AboutUs from './components/AboutUs';
+import FAQ from './components/FAQ';
 
-function CountdownTimer() {
-  const [time, setTime] = useState(15 * 60); // 15 minutes in seconds
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  const minutes = Math.floor(time / 60);
-  const seconds = time % 60;
-
-  return (
-    <div className="flex gap-2 items-center justify-center">
-      <Timer className="w-6 h-6 text-red-600" />
-      <span className="text-2xl font-bold">
-        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-      </span>
-    </div>
-  );
-}
+const products = {
+  weightLoss: [
+    {
+      name: "Night Mega Burner",
+      image: "https://nutriprofits.com/src/template/backend/uploads/image_1676885886.png",
+      price: 49.99,
+      originalPrice: 79.99,
+      rating: 4.8,
+      reviews: 256,
+      link: "https://nplink.net/s8hfhn1r?type=offer",
+      description: "Night Mega Burner es un suplemento revolucionario que trabaja mientras duermes. Formulado con ingredientes naturales que aceleran el metabolismo nocturno y maximizan la quema de grasa durante el descanso.",
+      fullDescription: "Night Mega Burner es la solución definitiva para quemar grasa mientras duermes. Su fórmula única contiene una mezcla especial de L-Carnitina, Té Verde y Cromo que trabajan en sinergia para: \n\n• Acelerar el metabolismo nocturno\n• Reducir el almacenamiento de grasa\n• Mejorar la calidad del sueño\n• Despertar con más energía\n\nResultados comprobados en estudios clínicos muestran una pérdida de peso hasta 3 veces mayor durante el descanso nocturno."
+    },
+    {
+      name: "Meltamin",
+      image: "https://nutriprofits.com/src/template/backend/uploads/image_1664798855.png",
+      price: 49.99,
+      originalPrice: 79.99,
+      rating: 4.9,
+      reviews: 189,
+      link: "https://nplink.net/76i523e8?type=offer",
+      description: "Meltamin es un potente quemador de grasa que combina ingredientes termogénicos naturales para maximizar la pérdida de peso de forma segura y efectiva.",
+      fullDescription: "Meltamin revoluciona la pérdida de peso con su fórmula avanzada que incluye:\n\n• Extracto de Té Verde concentrado\n• L-Carnitina purificada\n• Complejo termogénico natural\n• Vitaminas del grupo B\n\nDiseñado para:\n• Aumentar el gasto calórico\n• Reducir el apetito\n• Mantener los niveles de energía\n• Preservar la masa muscular"
+    },
+    {
+      name: "Fat Burn Active",
+      image: "https://nutriprofits.com/src/template/backend/uploads/image_1646118462.png",
+      price: 49.99,
+      originalPrice: 79.99,
+      rating: 4.7,
+      reviews: 312,
+      link: "https://nplink.net/d25pcoyk?type=offer",
+      description: "Fat Burn Active es un suplemento de última generación que combina la ciencia más avanzada en pérdida de peso con ingredientes 100% naturales.",
+      fullDescription: "Fat Burn Active representa lo último en tecnología de pérdida de peso:\n\n• Fórmula de triple acción\n• Ingredientes clinicamente probados\n• Resultados visibles en 2 semanas\n\nBeneficios principales:\n• Quema de grasa acelerada\n• Supresión del apetito natural\n• Aumento de energía sostenido\n• Mejora del rendimiento físico"
+    }
+  ],
+  performance: [
+    {
+      name: "GOAT Stamina",
+      image: "https://nutriprofits.com/src/template/backend/uploads/image_1666335431.png",
+      price: 49.99,
+      originalPrice: 79.99,
+      rating: 4.9,
+      reviews: 423,
+      link: "https://nplink.net/9heo2hyy?type=offer",
+      description: "GOAT Stamina es el suplemento definitivo para maximizar tu resistencia y rendimiento físico, con una fórmula única que potencia tu energía natural.",
+      fullDescription: "GOAT Stamina es el resultado de años de investigación en rendimiento deportivo:\n\n• Aumenta la resistencia física\n• Mejora la recuperación muscular\n• Optimiza los niveles de testosterona\n• Potencia el rendimiento general\n\nIngredientes premium:\n• Tribulus Terrestris\n• Maca Root\n• ZMA Complex\n• Vitaminas y minerales esenciales"
+    },
+    {
+      name: "Bulk Extreme",
+      image: "https://nutriprofits.com/src/template/backend/uploads/image_1656519402.png",
+      price: 49.99,
+      originalPrice: 79.99,
+      rating: 4.8,
+      reviews: 267,
+      link: "https://nplink.net/92eylzz9?type=offer",
+      description: "Bulk Extreme es la solución definitiva para ganar masa muscular de forma rápida y efectiva, con una fórmula concentrada de proteínas y aminoácidos.",
+      fullDescription: "Bulk Extreme es el suplemento más avanzado para ganancia muscular:\n\n• 100% proteína de suero aislada\n• Complex BCAA optimizado\n• Creatina monohidrato pura\n• Matriz de liberación prolongada\n\nBeneficios comprobados:\n• Aumento de masa muscular\n• Mejor recuperación\n• Mayor fuerza\n• Resultados visibles en 30 días"
+    }
+  ],
+  wellness: [
+    {
+      name: "Cappuccino MCT",
+      image: "https://nutriprofits.com/src/template/backend/uploads/image_1584523829.jpg",
+      price: 49.99,
+      originalPrice: 79.99,
+      rating: 4.6,
+      reviews: 178,
+      link: "https://nplink.net/48a89ah9?type=offer",
+      description: "Cappuccino MCT combina el placer del café con los beneficios de los aceites MCT para un impulso de energía y concentración duradera.",
+      fullDescription: "Cappuccino MCT es la bebida perfecta para empezar tu día:\n\n• Café arábica premium\n• Aceites MCT de coco\n• Sin azúcares añadidos\n• Bajo en calorías\n\nBeneficios:\n• Energía sostenida\n• Mayor concentración\n• Apoyo al metabolismo\n• Sabor delicioso"
+    },
+    {
+      name: "Fast Burn Extreme",
+      image: "https://nutriprofits.com/src/template/backend/uploads/image_1551533266.jpg",
+      price: 49.99,
+      originalPrice: 79.99,
+      rating: 4.7,
+      reviews: 234,
+      link: "https://nplink.net/fkkz9ymo?type=offer",
+      description: "Fast Burn Extreme es un suplemento termogénico avanzado que combina la quema de grasa con el aumento de energía para resultados óptimos.",
+      fullDescription: "Fast Burn Extreme representa la evolución en suplementos termogénicos:\n\n• Fórmula concentrada\n• Ingredientes naturales\n• Liberación gradual\n• Sin efectos secundarios\n\nBeneficios principales:\n• Quema de grasa intensiva\n• Energía duradera\n• Control del apetito\n• Mejora del metabolismo"
+    }
+  ]
+};
 
 function App() {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Fixed CTA Button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg z-50 md:hidden">
-        <a
-          href="https://entrega.logzz.com.br/pay/memx0rv4m/rcbiv-oferta-6"
-          className="block w-full bg-red-600 text-white text-center py-4 rounded-lg font-bold text-lg animate-pulse"
-        >
-          GARANTA O SEU AGORA!
-        </a>
-      </div>
+  const [currentPage, setCurrentPage] = useState('home');
 
-      {/* Flash Sale Header */}
-      <div className="bg-black text-white py-6 px-4">
-        <div className="container mx-auto text-center">
-          <h2 className="text-2xl md:text-4xl font-bold mb-4">⚡ OFERTA RELÂMPAGO! ⚡</h2>
-          <CountdownTimer />
-          <p className="mt-2 text-yellow-400">Corra! Você tem apenas 15 minutos para garantir seu desconto exclusivo!</p>
-        </div>
-      </div>
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'about':
+        return <AboutUs />;
+      case 'faq':
+        return <FAQ />;
+      default:
+        return (
+          <>
+            {/* Hero Section */}
+            <section className="pt-24 pb-12 px-4 bg-gradient-to-r from-blue-600 to-blue-800">
+              <div className="container mx-auto text-center text-white">
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                  Transforma Tu Cuerpo en Tiempo Récord
+                </h1>
+                <p className="text-xl md:text-2xl mb-8 text-blue-100">
+                  Productos seleccionados con resultados comprobados
+                </p>
+                <a
+                  href="#products"
+                  className="inline-flex items-center px-8 py-4 bg-white text-blue-600 rounded-full font-semibold text-lg hover:bg-blue-50 transition-colors"
+                >
+                  Ver Productos Exclusivos
+                  <ChevronRight className="ml-2 h-5 w-5" />
+                </a>
+              </div>
+            </section>
 
-      {/* Hero Section */}
-      <section className="py-12 px-4 bg-gradient-to-b from-black to-red-900 text-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div>
-              <img
-                src="https://http2.mlstatic.com/D_NQ_NP_995087-MLB82275507183_022025-O-maquina-de-cortar-cabelo-fazer-barba-acabamento-drago.webp"
-                alt="Barbeador Dragão"
-                className="rounded-lg shadow-2xl"
-              />
-            </div>
-            <div>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">Barbeador Dragão</h1>
-              <p className="text-xl mb-6">
-                Imagine ter um visual impecável sem precisar sair de casa. O Barbeador Dragão oferece cortes precisos,
-                práticos e sem falhas, garantindo um estilo profissional em minutos!
-              </p>
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center gap-2">
-                  <Check className="text-yellow-400" />
-                  <span>Design ergonômico premium</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="text-yellow-400" />
-                  <span>Lâminas de aço inoxidável</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="text-yellow-400" />
-                  <span>Pentes ajustáveis profissionais</span>
-                </div>
+            {/* Benefits Section */}
+            <section className="py-12 bg-white">
+              <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+                <BenefitCard
+                  icon={<Truck />}
+                  title="Envío en 24h"
+                  description="a España y Portugal"
+                />
+                <BenefitCard
+                  icon={<Star />}
+                  title="Productos de Alta Calidad"
+                  description="Selección premium"
+                />
+                <BenefitCard
+                  icon={<Shield />}
+                  title="Pago 100% Seguro"
+                  description="Transacciones protegidas"
+                />
+                <BenefitCard
+                  icon={<Headphones />}
+                  title="Soporte Dedicado"
+                  description="en Español y Portugués"
+                />
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            </section>
 
-      {/* Benefits Section */}
-      <section className="py-16 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Benefícios Exclusivos</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                icon: <Star className="w-12 h-12 text-red-600" />,
-                title: 'Precisão Profissional',
-                description: 'Lâminas afiadas para cortes perfeitos',
-              },
-              {
-                icon: <ShieldCheck className="w-12 h-12 text-red-600" />,
-                title: 'Segurança Garantida',
-                description: 'Design que evita cortes e irritações',
-              },
-              {
-                icon: <Truck className="w-12 h-12 text-red-600" />,
-                title: 'Entrega Expressa',
-                description: 'Receba em até 24 horas',
-              },
-            ].map((benefit, index) => (
-              <div key={index} className="text-center p-6 rounded-lg shadow-lg bg-gray-50">
-                <div className="flex justify-center mb-4">{benefit.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{benefit.title}</h3>
-                <p>{benefit.description}</p>
+            {/* Products Section */}
+            <section id="products" className="py-16 bg-gray-50">
+              <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-12">Nuestros Productos</h2>
+                <ProductTabs products={products} />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </section>
 
-      {/* Pricing Section */}
-      <section className="py-16 px-4 bg-gray-900 text-white">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Escolha seu Pacote</h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="bg-white text-gray-900 rounded-lg p-8 shadow-xl">
-              <h3 className="text-2xl font-bold mb-4">1 Unidade</h3>
-              <div className="mb-4">
-                <span className="text-gray-500 line-through">R$149,99</span>
-                <div className="text-4xl font-bold text-red-600">R$99,99</div>
-                <span className="text-green-600">Economize R$50,00</span>
-              </div>
-              <a
-                href="https://entrega.logzz.com.br/pay/memx0rv4m/rcbiv-oferta-6"
-                className="block w-full bg-red-600 text-white text-center py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition"
-              >
-                COMPRAR AGORA
-              </a>
-            </div>
-            <div className="bg-white text-gray-900 rounded-lg p-8 shadow-xl border-4 border-yellow-400">
-              <div className="absolute top-0 right-0 bg-yellow-400 text-black px-4 py-1 rounded-bl-lg font-bold">
-                MAIS VENDIDO
-              </div>
-              <h3 className="text-2xl font-bold mb-4">2 Unidades</h3>
-              <div className="mb-4">
-                <span className="text-gray-500 line-through">R$299,98</span>
-                <div className="text-4xl font-bold text-red-600">R$219,98</div>
-                <span className="text-green-600">Economize R$80,00</span>
-              </div>
-              <a
-                href="https://entrega.logzz.com.br/pay/memx0rv4m/rcbiv-oferta-6"
-                className="block w-full bg-red-600 text-white text-center py-4 rounded-lg font-bold text-lg hover:bg-red-700 transition"
-              >
-                COMPRAR AGORA
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 px-4 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">O que dizem nossos clientes</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                name: 'João P.',
-                image: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80',
-                text: 'Nunca mais gastei dinheiro no barbeiro! Faço tudo em casa e fica perfeito!',
-              },
-              {
-                name: 'Ricardo M.',
-                image: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?auto=format&fit=crop&w=200&q=80',
-                text: 'Qualidade impressionante! O melhor barbeador que já usei.',
-              },
-              {
-                name: 'Pedro S.',
-                image: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=200&q=80',
-                text: 'Praticidade e economia juntas. Super recomendo!',
-              },
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-gray-50 p-6 rounded-lg shadow-lg">
-                <div className="flex items-center gap-4 mb-4">
-                  <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover"
+            {/* Testimonials */}
+            <section className="py-16 bg-white">
+              <div className="container mx-auto px-4">
+                <h2 className="text-3xl font-bold text-center mb-12">Lo Que Dicen Nuestros Clientes</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <Testimonial
+                    name="Ana García"
+                    location="Barcelona, España"
+                    image="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80"
+                    text="Perdí 7kg en 6 semanas con Night Mega Burner. ¡Increíble!"
+                    rating={5}
                   />
-                  <div>
-                    <h3 className="font-bold">{testimonial.name}</h3>
-                    <div className="flex text-yellow-400">
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
-                      <Star className="w-4 h-4 fill-current" />
-                    </div>
-                  </div>
+                  <Testimonial
+                    name="Miguel Santos"
+                    location="Porto, Portugal"
+                    image="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
+                    text="GOAT Stamina cambió mi rutina de entrenamiento completamente."
+                    rating={5}
+                  />
+                  <Testimonial
+                    name="Carmen Rodríguez"
+                    location="Madrid, España"
+                    image="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80"
+                    text="Fat Burn Active me ayudó a alcanzar mi meta. ¡Muy satisfecha!"
+                    rating={4.5}
+                  />
                 </div>
-                <p className="italic">{testimonial.text}</p>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </section>
+          </>
+        );
+    }
+  };
 
-      {/* Final CTA */}
-      <section className="py-16 px-4 bg-red-600 text-white">
-        <div className="container mx-auto max-w-6xl text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">🚨 ÚLTIMAS UNIDADES! 🚨</h2>
-          <p className="text-xl mb-8">Aproveite antes que o desconto acabe!</p>
-          <a
-            href="https://entrega.logzz.com.br/pay/memx0rv4m/rcbiv-oferta-6"
-            className="inline-block bg-yellow-400 text-black px-12 py-4 rounded-lg font-bold text-xl hover:bg-yellow-300 transition"
-          >
-            COMPRAR AGORA
-          </a>
-          <div className="flex justify-center gap-8 mt-8">
-            <div className="flex items-center gap-2">
-              <Package className="w-6 h-6" />
-              <span>Frete Grátis</span>
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
+      {/* Header */}
+      <header className="fixed top-0 w-full bg-white shadow-sm z-50">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Globe2 className="h-8 w-8 text-blue-600" />
+            <span className="text-xl font-bold text-gray-800">Nutriglow Market</span>
+          </div>
+          
+          <nav className="hidden md:flex items-center space-x-6">
+            <button 
+              onClick={() => setCurrentPage('home')}
+              className={`text-gray-600 hover:text-blue-600 ${currentPage === 'home' ? 'text-blue-600' : ''}`}
+            >
+              Inicio
+            </button>
+            <a href="#products" className="text-gray-600 hover:text-blue-600">Productos</a>
+            <button 
+              onClick={() => setCurrentPage('about')}
+              className={`text-gray-600 hover:text-blue-600 ${currentPage === 'about' ? 'text-blue-600' : ''}`}
+            >
+              Sobre Nosotros
+            </button>
+            <button 
+              onClick={() => setCurrentPage('faq')}
+              className={`text-gray-600 hover:text-blue-600 ${currentPage === 'faq' ? 'text-blue-600' : ''}`}
+            >
+              FAQ
+            </button>
+          </nav>
+
+          <LanguageSelector />
+        </div>
+      </header>
+
+      {/* Main Content */}
+      {renderPage()}
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="font-bold text-lg mb-4">Nutriglow Market</h3>
+              <p className="text-gray-400">
+                Tu destino para productos de calidad para una vida más saludable.
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6" />
-              <span>Pagamento na Entrega</span>
+            <div>
+              <h3 className="font-bold text-lg mb-4">Enlaces</h3>
+              <ul className="space-y-2">
+                <li><button onClick={() => setCurrentPage('home')} className="text-gray-400 hover:text-white">Inicio</button></li>
+                <li><a href="#products" className="text-gray-400 hover:text-white">Productos</a></li>
+                <li><button onClick={() => setCurrentPage('about')} className="text-gray-400 hover:text-white">Sobre Nosotros</button></li>
+                <li><button onClick={() => setCurrentPage('faq')} className="text-gray-400 hover:text-white">FAQ</button></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white">Política de Privacidad</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Términos de Uso</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white">Aviso Legal</a></li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-bold text-lg mb-4">Contacto</h3>
+              <ul className="space-y-2">
+                <li className="text-gray-400">support@nutriglowmarket.com</li>
+                <li className="text-gray-400">+34 900 123 456</li>
+              </ul>
             </div>
           </div>
+          <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400">
+            <p>&copy; 2025 Nutriglow Market. Todos los derechos reservados.</p>
+          </div>
         </div>
-      </section>
+      </footer>
     </div>
   );
 }
